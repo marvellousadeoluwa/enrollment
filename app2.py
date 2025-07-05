@@ -27,28 +27,41 @@ feature_list = [
 
 # UI for top 12 features
 input_data = {
-    'ReasonForChoosingUniv': st.text_input("Reason for Choosing University", "Quality education"),
+    'Name': st.text_input('What is your Name: '),
+    'ReasonForChoosingUniv': st.selectbox("Reason for Choosing University",
+                                           ["Quality education",
+                                           "Academic Excellence",
+                                           "Affordability",
+                                           "Religious Affiliation",
+                                           "Scholarship",
+                                           "Unknown"]),
     
     'Faculty': st.selectbox("Faculty", [
         'COLLEGE OF BASIC MEDICAL AND HEALTH SCIENCES',
         'College of Natural and applied sciences',
         'Law',
-        'Natural and Applied Sciences'
+        'Natural and Applied Sciences',
     ]),
     
-    'Department': st.text_input("Department", "Computer science"),
+    'Department': st.selectbox("Department",
+                                ["Computer science",
+                                "Islamic law",
+                                "Mass communication",
+                                "Mathematical and Computer Science",
+                                "Nursing science",
+                                "Unknown"]),
     
-    'EnrollmentYear': st.selectbox("Enrollment Year", [2019, 2020, 2021, 2022, 2023, 2024]),
+    'EnrollmentYear': st.selectbox("Enrollment Year", [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, "<=2020"]),
     
     'AgeGroup': st.selectbox("Age Group", ['<18', '18-22', '23-27', '28-32', '33+']),
     
-    'CurrentLevel': st.selectbox("Current Level", [100, 200, 300, 400, 'Graduate']),
+    'CurrentLevel': st.selectbox("Current Level", [100, 200, 300, 400, 'Graduate',"None"]),
     
-    'TransferReason': st.text_input("Reason for Previous Transfer (if any)", "None"),
+    'TransferReason': st.selectbox("Reason for Previous Transfer (if any)",["Academic Challenges", "Better Opportunities","Financial","Unknown", "None"]),
     
-    'CGPARange': st.selectbox("CGPA Range", ['2.4 - 3.49', '3.5 - 4.49', '4.5 - 5.0']),
+    'CGPARange': st.selectbox("CGPA Range", ['2.4 - 3.49', '3.5 - 4.49', '4.5 - 5.0', "Unknown"]),
     
-    'StateOfOrigin': st.selectbox("State of Origin", ['Oyo', 'Lagos', 'Osun', 'Ogun', 'Kogi']),
+    'StateOfOrigin': st.selectbox("State of Origin", ['Oyo', 'Lagos', 'Osun', 'Ogun', 'Ondo','Kogi', "Others"]),
     
     'TuitionFundingSource': st.selectbox("Tuition Funding Source", ['Parents', 'Scholarship', 'Self', 'Loan', 'Other']),
     
