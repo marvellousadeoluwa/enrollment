@@ -3,62 +3,98 @@ import pandas as pd
 import joblib
 
 # Load the trained model
-model = joblib.load("cost_sensitive_rf_model.pkl")
+model = joblib.load("cost_sensitive_rf_model_final.pkl")
 
 st.title("Student Transfer Prediction App")
 st.write("Predict whether a student might consider transferring to another institution.")
 
-# Input UI
-age_group = st.selectbox("Age Group", ['<18', '18-22', '23-27', '28-32', '33+'])
-gender = st.radio("Gender", ['Male', 'Female'])
-state = st.selectbox("State of Origin", ['Oyo', 'Lagos', 'Osun', 'Ogun', 'Kogi '])
-current_level = st.selectbox("Current Level", [100, 200, 300, 400, 'Graduate'])
-enrollment_year = st.selectbox("Enrollment Year", [2019, 2021, 2022, 2023, 2024])
-faculty = st.selectbox("Faculty", [
-    'COLLEGE OF BASIC MEDICAL AND HEALTH SCIENCES',
-    'College of Natural and applied sciences ',
-    'Law', 'Unknown', 'Natural and Applied Sciences '])
-admission_mode = st.selectbox("Admission Mode", ['UTME', 'Direct Entry', 'Conversion '])
-changed_course = st.radio("Changed Course?", ['Yes', 'No', 'Unknown'])
-cgpa_range = st.selectbox("CGPA Range", ['2.4 - 3.49', '3.5 - 4.49', '4.5 - 5.0', 'Unknown'])
-academic_challenges = st.selectbox("Academic Challenges", [
-    'None', 'Poor Facilities', 'Financial', 'Lecturer Availability', 'Unknown'])
-student_support = st.selectbox("Student Support Rating", ['Excellent', 'Good', 'Fair', 'Poor'])
-postgrad_plan = st.radio("Plan Postgrad at FU?", ['Yes', 'No', 'Maybe'])
+# Final top 12 list used.
+feature_list = [
+    'ReasonForChoosingUniv',
+    'FacultyDepartment',
+    'EnrollmentAge',
+    'CurrentLevel',
+    'TransferReason',
+    'CGPARange',
+    'Department',
+    'StateOfOrigin',
+    'EnrollmentYear',
+    'TuitionFundingSource',
+    'StudentSupportRating',
+    'HadAcademicChallenges'
+]
 
-# Construct input DataFrame
-input_dict = {
-    'AgeGroup': age_group,
-    'Gender': gender,
-    'StateOfOrigin': state,
-    'CurrentLevel': str(current_level),
-    'EnrollmentYear': enrollment_year,
-    'Faculty': faculty,
-    'AdmissionMode': admission_mode,
-    'ChangedCourse': changed_course,
-    'CGPARange': cgpa_range,
-    'AcademicChallenges': academic_challenges,
-    'StudentSupportRating': student_support,
-    'PlanPostgradAtFU': postgrad_plan
+
+# UI for top 12 features
+input_data = {
+    'Name': st.text_input('What is your Name: '),
+    'ReasonForChoosingUniv': st.selectbox("Reason for Choosing University",
+                                           ["Quality education",
+                                           "Academic Excellence",
+                                           "Affordability",
+                                           "Religious Affiliation",
+                                           "Scholarship",
+                                           "Unknown"]),
+    
+    'Faculty': st.selectbox("Faculty", ["Select from option",
+        'COLLEGE OF BASIC MEDICAL AND HEALTH SCIENCES',
+        'College of Natural and applied sciences',
+        'Law',
+        'Natural and Applied Sciences',
+    ]),
+    
+    'Department': st.selectbox("Department",
+                                ["Computer science",
+                                "Islamic law",
+                                "Mass communication",
+                                "Mathematical and Computer Science",
+                                "Nursing science",
+                                "Unknown"]),
+    
+    'EnrollmentYear': st.selectbox("Enrollment Year", [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, "<=2020"]),
+    
+    'AgeGroup': st.selectbox("Age Group", ['<18', '18-22', '23-27', '28-32', '33+']),
+    
+    'CurrentLevel': st.selectbox("Current Level", [100, 200, 300, 400, 'Graduate',"None"]),
+    
+    'TransferReason': st.selectbox("Reason for Previous Transfer (if any)",["Academic Challenges", "Better Opportunities","Financial","Unknown", "None"]),
+    
+    'CGPARange': st.selectbox("CGPA Range", ['2.4 - 3.49', '3.5 - 4.49', '4.5 - 5.0', "Unknown"]),
+    
+    'StateOfOrigin': st.selectbox("State of Origin", ['Oyo', 'Lagos', 'Osun', 'Ogun', 'Ondo','Kogi', "Others"]),
+    
+    'TuitionFundingSource': st.selectbox("Tuition Funding Source", ['Parents', 'Scholarship', 'Self', 'Loan', 'Other']),
+    
+    'StudentSupportRating': st.selectbox("Student Support Rating", ['Excellent', 'Good', 'Fair', 'Poor']),
+    
+    'AcademicChallenges': st.selectbox("Academic Challenges", [
+        'None', 'Poor Facilities', 'Financial', 'Lecturer Availability', 'Time management', 'Religion Palava'
+    ])
 }
 
-input_df = pd.DataFrame([input_dict])
 
-# Dummy encoding (assuming LabelEncoder or OneHotEncoder used)
-# In production, ensure encoding matches training
-# For this sample, we use label encoding simulation
+# Age mapping
+age_mapping = {'<18': 16, '18-22': 20, '23-27': 25, '28-32': 30, '33+': 33}
 
-# Load encoders if available or apply consistent mapping
-# For simplicity, convert categorical features to category codes
+# Derived features
+input_data['EnrollmentAge'] = (2025 - input_data['EnrollmentYear']) + age_mapping[input_data['AgeGroup']]
+input_data['FacultyDepartment'] = input_data['Faculty'] + "_" + input_data['Department']
+input_data['HadAcademicChallenges'] = 0 if input_data['AcademicChallenges'] == 'None' else 1
+
+# Construct DataFrame
+filtered_input_data = {key: input_data[key] for key in feature_list if key in input_data}
+
+input_df = pd.DataFrame([filtered_input_data])
+
+# Encode categorical values
 for col in input_df.columns:
     input_df[col] = input_df[col].astype('category').cat.codes
 
 # Predict
 if st.button("Predict"):
     prediction = model.predict(input_df)
-    result = "✅ Likely to Stay" if prediction[0] == 0 else "⚠️ Likely to Consider Transfer"
+    result = f"{input_data['Name']} is ✅ Likely to Stay" if prediction[0] == 0 else f"{input_data['Name']} is ⚠️ Likely to Consider Transfer"
     st.subheader("Prediction Result")
     st.success(result)
-
     st.write("\n**Model Input Summary:**")
     st.dataframe(input_df)
