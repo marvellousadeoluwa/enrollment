@@ -3,22 +3,29 @@ import pandas as pd
 import joblib
 
 # Load the trained model
-model = joblib.load("cost_sensitive_rf_model.pkl")
+model = joblib.load("cost_sensitive_rf_model_final.pkl")
 
 st.title("Student Transfer Prediction App")
 st.write("Predict whether a student might consider transferring to another institution.")
 
 # Full list of 26 model features used during training
+
 feature_list = [
-    'AgeGroup', 'Gender', 'StateOfOrigin', 'CurrentLevel', 'EnrollmentYear', 
-    'Faculty', 'Department', 'AdmissionMode', 'ChangedCourse',
-    'ReasonForChoosingUniv', 'OnScholarship', 'TuitionFundingSource',
-    'TransferReason', 'CGPARange', 'AcademicResourcesAdequate',
-    'StudentSupportRating', 'AcademicChallenges', 'FirstHeardAboutFU',
-    'AdmissionFinalFactor', 'DeferredOrBreak', 'ReasonForDeferral',
-    'PlanPostgradAtFU', 'ClassSizeAdequate', 'FacultyDistributionAdequate',
-    'AccommodationDifficulty', 'PracticalSessionsAdequate'
+    'ReasonForChoosingUniv',
+    'FacultyDepartment',
+    'EnrollmentAge',
+    'CurrentLevel',
+    'TransferReason',
+    'CGPARange',
+    'Department',
+    'StateOfOrigin',
+    'EnrollmentYear',
+    'TuitionFundingSource',
+    'StudentSupportRating',
+    'HadAcademicChallenges'
 ]
+
+
 
 # UI for all 26 features
 input_data = {
@@ -54,8 +61,12 @@ input_data = {
     'PracticalSessionsAdequate': st.radio("Are Practical Sessions Adequate?", ['Yes', 'No', 'Unknown'])
 }
 
+# Filter input_data to include only keys in feature_list
+filtered_input_data = {k: v for k, v in input_data.items() if k in feature_list}
+
+
 # Construct DataFrame
-input_df = pd.DataFrame([input_data])
+input_df = pd.DataFrame([filtered_input_data])
 
 # Encode categorical values
 for col in input_df.columns:
