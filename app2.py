@@ -36,7 +36,7 @@ input_data = {
                                            "Scholarship",
                                            "Unknown"]),
     
-    'Faculty': st.selectbox("Faculty", [
+    'Faculty': st.selectbox("Faculty", ["Select from option",
         'COLLEGE OF BASIC MEDICAL AND HEALTH SCIENCES',
         'College of Natural and applied sciences',
         'Law',
