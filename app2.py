@@ -93,7 +93,7 @@ for col in input_df.columns:
 # Predict
 if st.button("Predict"):
     prediction = model.predict(input_df)
-    result = "✅ Likely to Stay" if prediction[0] == 0 else "⚠️ Likely to Consider Transfer"
+    result = f"{input_data['Name']} is ✅ Likely to Stay" if prediction[0] == 0 else f"{input_data['Name']} is ⚠️ Likely to Consider Transfer"
     st.subheader("Prediction Result")
     st.success(result)
     st.write("\n**Model Input Summary:**")
