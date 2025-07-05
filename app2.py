@@ -8,8 +8,7 @@ model = joblib.load("cost_sensitive_rf_model_final.pkl")
 st.title("Student Transfer Prediction App")
 st.write("Predict whether a student might consider transferring to another institution.")
 
-# Full list of 26 model features used during training
-
+# Final top 12 list used.
 feature_list = [
     'ReasonForChoosingUniv',
     'FacultyDepartment',
@@ -70,7 +69,9 @@ input_data['FacultyDepartment'] = input_data['Faculty'] + "_" + input_data['Depa
 input_data['HadAcademicChallenges'] = 0 if input_data['AcademicChallenges'] == 'None' else 1
 
 # Construct DataFrame
-input_df = pd.DataFrame([input_data[feature_list]])
+filtered_input_data = {key: input_data[key] for key in feature_list if key in input_data}
+
+input_df = pd.DataFrame([filtered_input_data[feature_list]])
 
 # Encode categorical values
 for col in input_df.columns:
