@@ -71,7 +71,7 @@ input_data['HadAcademicChallenges'] = 0 if input_data['AcademicChallenges'] == '
 # Construct DataFrame
 filtered_input_data = {key: input_data[key] for key in feature_list if key in input_data}
 
-input_df = pd.DataFrame([filtered_input_data[feature_list]])
+input_df = pd.DataFrame([filtered_input_data])
 
 # Encode categorical values
 for col in input_df.columns:
